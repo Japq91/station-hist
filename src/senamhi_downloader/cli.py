@@ -34,6 +34,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--list-departamentos", action="store_true",
         help="Lista los departamentos disponibles y sale",
     )
+    parser.add_argument(
+        "--doctor", action="store_true",
+        help="Muestra el navegador detectado (Chrome/Brave/Edge) y sale",
+    )
     return parser
 
 
@@ -45,6 +49,16 @@ def _print_stations(stations: list[dict]) -> None:
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
+
+    if args.doctor:
+        from senamhi_downloader.browser import check_browser
+
+        result = check_browser()
+        print(f"ok:      {result.ok}")
+        print(f"path:    {result.path}")
+        print(f"source:  {result.source}")
+        print(f"message: {result.message}")
+        return
 
     if args.list_departamentos:
         for dep in list_departments():

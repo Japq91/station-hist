@@ -51,6 +51,14 @@ async def download_all(stations: list[dict]) -> None:
 
     browser = await zd.start(config=get_browser_config())
     try:
+        print(f"\nAbriendo {settings.BASE_URL} para iniciar sesion...")
+        await browser.get(settings.BASE_URL)
+        print(
+            "  -> En la ventana del navegador: completa el 'Ingreso' "
+            "(acepta terminos y condiciones y resuelve el captcha)."
+        )
+        input("  Presiona ENTER aqui cuando hayas iniciado sesion... ")
+
         for i, station in enumerate(stations, 1):
             codigo = station["codigo"]
             name = station["name"]
