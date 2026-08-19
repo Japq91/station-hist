@@ -47,6 +47,28 @@ def _filter_options_by_period(options: list[dict], start_year: int, end_year: in
     return filtered
 
 
+async def _click_tab(page, attempts: int = 5) -> None:
+    """
+    Hace clic en la pestana 'Tabla'. Algunas estaciones (sobre todo
+    automaticas/EMA, con widgets extra en la pagina) tardan mas en
+    terminar de renderizar, y zendriver no puede calcular la posicion
+    del elemento todavia ('could not find position for ...'). Reintenta
+    con una pausa creciente y volviendo a resolver el elemento.
+    """
+    last_error: Exception | None = None
+    for attempt in range(1, attempts + 1):
+        tab_elem = await page.wait_for(selector="a#tabla-tab")
+        try:
+            await tab_elem.scroll_into_view()
+            await asyncio.sleep(0.3)
+            await tab_elem.click()
+            return
+        except Exception as e:
+            last_error = e
+            await asyncio.sleep(attempt * 0.5)
+    raise RuntimeError(f"No se pudo hacer clic en la pestana Tabla tras {attempts} intentos: {last_error}")
+
+
 async def _capture_post_response(page, response_queue: asyncio.Queue, trigger_action) -> str:
     while not response_queue.empty():
         response_queue.get_nowait()
@@ -77,8 +99,7 @@ async def _setup_page(browser, url: str):
     page.add_handler(cdp.network.ResponseReceived, on_response_received)
     page.add_handler(cdp.network.LoadingFinished, on_loading_finished)
 
-    tab_elem = await page.wait_for(selector="a#tabla-tab")
-    await tab_elem.click()
+    await _click_tab(page)
 
     select_found = await page.wait_for(selector="select#CBOFiltro")
     if not select_found:
