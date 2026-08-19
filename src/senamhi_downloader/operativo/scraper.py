@@ -15,6 +15,7 @@ import random
 from urllib.parse import urlencode
 
 import zendriver as zd
+from bs4 import BeautifulSoup
 from zendriver import cdp
 
 from senamhi_downloader.browser import get_browser_config
@@ -101,7 +102,11 @@ async def _process_option(page, response_queue, option, csv_manager: CSVManager)
     for attempt in range(1, settings.MAX_RETRIES + 2):
         try:
             full_html = await _capture_post_response(page, response_queue, select_action)
-            rows = csv_manager.add_table_data(full_html, option["value"])
+            soup = BeautifulSoup(full_html, "html.parser")
+            data_table = soup.find("table", id="dataTable")
+            if not data_table:
+                raise RuntimeError("No se encontro table#dataTable en la respuesta")
+            rows = csv_manager.add_table_data(str(data_table), option["value"])
             print(f"    {option['text']}: {rows} filas")
             return True
         except Exception as e:
