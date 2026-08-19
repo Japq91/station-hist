@@ -19,6 +19,7 @@ import zendriver as zd
 
 from senamhi_downloader import settings
 from senamhi_downloader.browser import get_browser_config
+from senamhi_downloader.stations import department_slug
 
 
 def _newest_file_since(folder: Path, since_ts: float) -> Path | None:
@@ -62,17 +63,20 @@ async def download_all(stations: list[dict]) -> None:
         for i, station in enumerate(stations, 1):
             codigo = station["codigo"]
             name = station["name"]
-            url = settings.DOWNLOAD_URL_TEMPLATE.format(codigo=codigo)
+            dep_slug = department_slug(station["departamento"])
+            url = settings.MAP_URL_TEMPLATE.format(dep_slug=dep_slug)
 
-            print(f"\n[{i}/{len(stations)}] Estacion: {name} ({codigo})")
-            print(f"  Abriendo: {url}")
+            print(f"\n[{i}/{len(stations)}] Estacion: {name} ({codigo}) - {station['departamento']}")
+            print(f"  Abriendo mapa filtrado: {url}")
             start_ts = time.time()
 
             await browser.get(url)
 
             print(
-                "  -> En la ventana del navegador: resuelve el/los captcha, "
-                "acepta terminos y condiciones, y haz clic en 'Descargar'."
+                f"  -> En la ventana del navegador: busca el globo de '{name}' "
+                "(o su codigo), haz clic en el, ve a la pestana 'Descarga', "
+                "resuelve el/los captcha, acepta terminos y condiciones, "
+                "y haz clic en 'Descargar'."
             )
 
             while True:

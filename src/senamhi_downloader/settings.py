@@ -15,7 +15,11 @@ DOWNLOAD_DIR = PROJECT_ROOT / "downloads"
 BROWSER_DOWNLOADS_DIR = Path(os.getenv("BROWSER_DOWNLOADS_DIR", str(Path.home() / "Downloads")))
 
 BASE_URL = "https://www.senamhi.gob.pe/site/descarga-datos/"
-DOWNLOAD_URL_TEMPLATE = "https://www.senamhi.gob.pe/site/descarga-datos/descarga/?cod={codigo}"
+# La pagina descarga/?cod=X esta pensada para cargarse dentro del flujo
+# normal (mapa filtrado por departamento -> clic en el globo -> pestana
+# Descarga), no como link directo. Navegamos al mapa filtrado y dejamos que
+# el usuario haga clic en el globo correcto, igual que en el uso manual.
+MAP_URL_TEMPLATE = "https://www.senamhi.gob.pe/site/descarga-datos/map_hist_data.php?dp={dep_slug}"
 
 SENAMHI_EMAIL = os.getenv("SENAMHI_EMAIL", "")
 SENAMHI_PASSWORD = os.getenv("SENAMHI_PASSWORD", "")

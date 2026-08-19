@@ -38,6 +38,11 @@ def list_departments() -> list[str]:
     return sorted({s["departamento"] for s in load_stations()})
 
 
+def department_slug(departamento: str) -> str:
+    """Convierte 'LA LIBERTAD' -> 'la-libertad', tal como lo espera la URL de SENAMHI."""
+    return departamento.strip().lower().replace(" ", "-")
+
+
 def filter_by_bbox(lat1: float, lat2: float, lon1: float, lon2: float) -> list[dict]:
     """Estaciones dentro del rectangulo definido por dos esquinas (orden libre)."""
     lat_min, lat_max = sorted((lat1, lat2))

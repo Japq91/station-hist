@@ -68,11 +68,16 @@ Diagnosticar qué navegador detecta el script:
 python run.py --doctor
 ```
 
-El primer navegador abierto pausa para que completes el "Ingreso" (acepta
-términos y condiciones y resuelve el captcha) — esa sesión se mantiene para
-el resto de la corrida. Luego, por cada estación seleccionada, el navegador
-abre su página de descarga; resuelve el captcha, acepta los términos y haz
-clic en "Descargar". En la terminal verás un menú:
+Al abrir el navegador, pausa para que completes el "Ingreso" (acepta
+términos y condiciones y resuelve el captcha) — esa sesión se mantiene
+dentro de la misma pestaña para el resto de la corrida.
+
+Luego, por cada estación seleccionada, el navegador abre el **mapa filtrado
+por el departamento de esa estación** (no un link directo — la página de
+descarga solo funciona bien si se llega a ella haciendo clic en el globo,
+igual que en el uso manual). Busca el globo de la estación indicada, haz
+clic en él, ve a la pestaña "Descarga", resuelve el captcha, acepta los
+términos y haz clic en "Descargar". En la terminal verás un menú:
 
 ```
 [1] Aun no he terminado (esperar)
