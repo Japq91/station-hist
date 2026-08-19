@@ -14,7 +14,11 @@ DOWNLOAD_DIR = PROJECT_ROOT / "downloads"
 # os.getenv no aplica el default si la variable existe pero esta vacia
 # (ej: "BROWSER_DOWNLOADS_DIR=" en .env), asi que se valida explicitamente.
 _browser_downloads_env = os.getenv("BROWSER_DOWNLOADS_DIR", "").strip()
-BROWSER_DOWNLOADS_DIR = Path(_browser_downloads_env) if _browser_downloads_env else Path.home() / "Downloads"
+BROWSER_DOWNLOADS_DIR = (
+    Path(_browser_downloads_env).expanduser()
+    if _browser_downloads_env
+    else Path.home() / "Downloads"
+)
 
 BASE_URL = "https://www.senamhi.gob.pe/site/descarga-datos/"
 # La pagina descarga/?cod=X esta pensada para cargarse dentro del flujo
