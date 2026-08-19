@@ -49,10 +49,11 @@ Descargar todas las estaciones de un departamento:
 python run.py --dep MOQUEGUA
 ```
 
-Descargar las estaciones dentro de un rectángulo geográfico (lat1, lat2, lon1, lon2, en cualquier orden):
+Descargar las estaciones dentro de un rectángulo geográfico (lat1, lat2, lon1, lon2, en cualquier orden).
+Usa `=` (no espacio) porque los valores empiezan con `-` y confunden a argparse:
 
 ```bash
-python run.py --bbox -18.5,-16,-71,-70
+python run.py --bbox=-18.5,-16,-71,-70
 ```
 
 Ver los departamentos disponibles:
