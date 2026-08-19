@@ -8,8 +8,11 @@ El script abre un navegador real (Chrome/Brave/Edge, vía [zendriver](https://gi
 misma lógica de detección que usa [Garúa](https://github.com/danyneyra/senamhi-scraper))
 y navega automáticamente a la página de cada estación que elijas. Tú
 resuelves el captcha y aceptas los términos y condiciones a mano en esa
-ventana — el script solo se encarga de moverse entre estaciones y de mover
-el archivo descargado a `downloads/`.
+ventana — el script se encarga de moverse entre estaciones y de configurar
+la descarga (vía CDP `Browser.setDownloadBehavior`, necesario porque Chrome
+bloquea descargas automáticas cuando está controlado remotamente) para que
+los archivos caigan directo en `downloads/`, sin pasar por la carpeta de
+Descargas del sistema.
 
 Incluye `data/estaciones.json` con las 293 estaciones disponibles en el
 portal, en 22 departamentos del Perú.
@@ -26,7 +29,6 @@ git clone https://github.com/Japq91/station-hist.git
 cd station-hist
 pip install -r requirements.txt
 cp .env.example .env
-# edita .env si tu carpeta de Descargas no es ~/Downloads
 ```
 
 ## Uso
@@ -79,13 +81,9 @@ por el departamento de esa estación** (no un link directo — la página de
 descarga solo funciona bien si se llega a ella haciendo clic en el globo,
 igual que en el uso manual). Busca el globo de la estación indicada, haz
 clic en él, ve a la pestaña "Descarga", resuelve el captcha, acepta los
-términos y haz clic en "Descargar". Presiona ENTER en la terminal para
-pasar a la siguiente estación.
-
-Los archivos **no se mueven estación por estación** — al terminar la
-última estación y cerrarse el navegador, el script busca todos los
-archivos `q*.txt` nuevos en tu carpeta de Descargas y los mueve de una sola
-vez a `downloads/` del proyecto.
+términos y haz clic en "Descargar" — el archivo se guarda directo en
+`downloads/` del proyecto (Chrome ya sabe adónde mandarlo). Presiona ENTER
+en la terminal para pasar a la siguiente estación.
 
 ## Estructura
 
