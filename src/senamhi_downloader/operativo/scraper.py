@@ -80,14 +80,15 @@ async def _capture_post_response(page, response_queue: asyncio.Queue, trigger_ac
     return body
 
 
-async def _setup_page(browser, url: str):
+async def _setup_page(browser, url: str, pause_for_captcha: bool = True):
     page = await browser.get(url)
 
-    print(
-        "  -> Si aparece una verificacion de Cloudflare en el navegador, "
-        "resuelvela ahora."
-    )
-    input("  Presiona ENTER aqui para continuar con esta estacion... ")
+    if pause_for_captcha:
+        print(
+            "  -> Si aparece una verificacion de Cloudflare en el navegador, "
+            "resuelvela ahora."
+        )
+        input("  Presiona ENTER aqui para continuar con esta estacion... ")
 
     await page.send(cdp.network.enable())
 
@@ -146,11 +147,13 @@ async def _process_option(page, response_queue, option, csv_manager: CSVManager)
     return False
 
 
-async def download_station(browser, station: dict, start_year: int, end_year: int) -> str | None:
+async def download_station(
+    browser, station: dict, start_year: int, end_year: int, pause_for_captcha: bool = True
+) -> str | None:
     url = build_station_url(station)
     print(f"  Abriendo: {url}")
 
-    page, response_queue = await _setup_page(browser, url)
+    page, response_queue = await _setup_page(browser, url, pause_for_captcha=pause_for_captcha)
 
     select_html = await (await page.wait_for(selector="select#CBOFiltro")).get_html()
     options = extract_select_options(select_html)
@@ -196,7 +199,9 @@ async def download_all(stations: list[dict], start_year: int, end_year: int) -> 
         for i, station in enumerate(stations, 1):
             print(f"\n[{i}/{len(stations)}] Estacion: {station['nombre']} ({station['codigo']}) - {station['departamento']}")
             try:
-                await download_station(browser, station, start_year, end_year)
+                await download_station(
+                    browser, station, start_year, end_year, pause_for_captcha=(i > 1)
+                )
             except Exception as e:
                 print(f"  [!] Error con la estacion {station['codigo']}: {e}")
     finally:
