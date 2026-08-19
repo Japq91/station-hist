@@ -68,26 +68,24 @@ Diagnosticar qué navegador detecta el script:
 python run.py --doctor
 ```
 
-Al abrir el navegador, pausa para que completes el "Ingreso" (acepta
-términos y condiciones y resuelve el captcha) — esa sesión se mantiene
-dentro de la misma pestaña para el resto de la corrida.
+El navegador abre directo con zoom en el **mapa filtrado por el
+departamento de la primera estación de la lista**, y pausa para que
+completes el "Ingreso" (acepta términos y condiciones y resuelve el
+captcha) — esa sesión se mantiene dentro de la misma pestaña para el resto
+de la corrida.
 
 Luego, por cada estación seleccionada, el navegador abre el **mapa filtrado
 por el departamento de esa estación** (no un link directo — la página de
 descarga solo funciona bien si se llega a ella haciendo clic en el globo,
 igual que en el uso manual). Busca el globo de la estación indicada, haz
 clic en él, ve a la pestaña "Descarga", resuelve el captcha, acepta los
-términos y haz clic en "Descargar". En la terminal verás un menú:
+términos y haz clic en "Descargar". Presiona ENTER en la terminal para
+pasar a la siguiente estación.
 
-```
-[1] Aun no he terminado (esperar)
-[2] Ya descargue -> mover archivo y continuar
-[3] Saltar esta estacion
-```
-
-Elige `2` una vez que el archivo ya se descargó a tu carpeta de Descargas —
-el script lo mueve a `downloads/` del proyecto y pasa a la siguiente
-estación automáticamente.
+Los archivos **no se mueven estación por estación** — al terminar la
+última estación y cerrarse el navegador, el script busca todos los
+archivos `q*.txt` nuevos en tu carpeta de Descargas y los mueve de una sola
+vez a `downloads/` del proyecto.
 
 ## Estructura
 
