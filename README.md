@@ -4,8 +4,8 @@ Un par de scripts en Python para automatizar la descarga de datos históricos hi
 
 El SENAMHI tiene dos portales distintos, por lo que el repositorio se divide en dos enfoques:
 
-- **`run_climatico.py`**: para el portal de [Descarga de Datos](https://www.senamhi.gob.pe/site/descarga-datos/). Requiere login y captcha. El script automatiza la navegación y el filtrado entre estaciones, pero la validación humana inicial hay que hacerla a mano.
-- **`run_operativo.py`**: para el portal del [Mapa de Estaciones](https://www.senamhi.gob.pe/mapas/mapa-estaciones-2/). 100% automático, sin captcha ni login (usa la misma ruta que [Garúa](https://github.com/danyneyra/senamhi-scraper)).
+- **`run_climatico.py`**: para el portal de [Descarga de Datos](https://www.senamhi.gob.pe/site/descarga-datos/). Requiere login y captcha. El script automatiza la navegación y el filtrado entre estaciones, pero la validación humana inicial hay que hacerla a mano (correo ingreso y para cada estación).
+- **`run_operativo.py`**: para el portal del [Mapa de Estaciones](https://www.senamhi.gob.pe/mapas/mapa-estaciones-2/). 95% automático, sin captcha ni login (usa la misma ruta que [Garúa](https://github.com/danyneyra/senamhi-scraper)). Sin embargo, este requiere aceptar un captcha en cada vez que se cambia de estación.
 
 Ambos usan [zendriver](https://github.com/cdpdriver/zendriver) por detrás para levantar una instancia real de Chrome, Brave o Edge.
 
@@ -25,32 +25,21 @@ conda env create -f environment.yml
 conda activate getdata
 cp .env.example .env
 ```
-
-> **Nota:** también funciona sin conda con `pip install -r requirements.txt` en un entorno virtual de Python 3.11+. Para actualizar el ambiente después de un `git pull` que cambie `environment.yml`: `conda env update -f environment.yml --prune`.
-
 ## 1. Descarga del portal climático (semi-automático)
 
 Ejecuta `run_climatico.py`. El repositorio incluye la metadata de 293 estaciones en `data/estaciones.json`.
 
 **Ejemplos de uso:**
 
-Buscar el código de una estación por nombre:
+
 ```bash
+#Buscar el código de una estación por nombre:
 python run_climatico.py --search UBINAS
-```
-
-Descargar por código (soporta varias estaciones):
-```bash
+#Descargar por código (soporta varias estaciones):
 python run_climatico.py --station 000851 --station 000806
-```
-
-Descargar un departamento completo:
-```bash
+#Descargar un departamento completo:
 python run_climatico.py --dep MOQUEGUA
-```
-
-Descargar por rectángulo geográfico (lat1, lat2, lon1, lon2). Usa `=` para que argparse no confunda los signos negativos con otra opción:
-```bash
+#Descargar por rectángulo geográfico (lat1, lat2, lon1, lon2). Usa `=` para que argparse no confunda los signos negativos con otra opción:
 python run_climatico.py --bbox=-18.5,-16,-71,-70
 ```
 
@@ -61,7 +50,9 @@ python run_climatico.py --doctor
 ```
 
 **Flujo de ejecución:**
-Al iniciar, el script abre el navegador centrado en el mapa del departamento correspondiente a la primera estación. La ejecución hace una pausa para que inicies sesión, aceptes los términos y resuelvas el captcha manualmente. Una vez que descargas el primer archivo, presionas ENTER en la terminal y el script avanza a la siguiente estación, manteniendo la sesión activa. Los archivos quedan en `downloads/`.
+Al iniciar, el script abre el navegador centrado en el mapa del departamento correspondiente a la primera estación. 
+La ejecución hace una pausa para que inicies sesión, aceptes los términos y resuelvas el captcha manualmente. 
+Una vez que descargas el primer archivo, presionas ENTER en la terminal y el script avanza a la siguiente estación, manteniendo la sesión activa. Los archivos quedan en `downloads/`.
 
 ## 2. Descarga del portal operativo (100% automático)
 

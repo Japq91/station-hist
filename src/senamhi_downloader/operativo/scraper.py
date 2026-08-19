@@ -82,6 +82,13 @@ async def _capture_post_response(page, response_queue: asyncio.Queue, trigger_ac
 
 async def _setup_page(browser, url: str):
     page = await browser.get(url)
+
+    print(
+        "  -> Si aparece una verificacion de Cloudflare en el navegador, "
+        "resuelvela ahora."
+    )
+    input("  Presiona ENTER aqui para continuar con esta estacion... ")
+
     await page.send(cdp.network.enable())
 
     response_queue: asyncio.Queue = asyncio.Queue()
