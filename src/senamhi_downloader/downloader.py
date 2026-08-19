@@ -19,7 +19,6 @@ import zendriver as zd
 
 from senamhi_downloader import settings
 from senamhi_downloader.browser import get_browser_config
-from senamhi_downloader.stations import load_stations
 
 
 def _newest_file_since(folder: Path, since_ts: float) -> Path | None:
@@ -47,8 +46,7 @@ def _wait_for_new_file(folder: Path, since_ts: float, timeout: int = 120) -> Pat
     return None
 
 
-async def download_all(stations: list[dict] | None = None) -> None:
-    stations = stations if stations is not None else load_stations()
+async def download_all(stations: list[dict]) -> None:
     settings.DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     browser = await zd.start(config=get_browser_config())
@@ -84,11 +82,3 @@ async def download_all(stations: list[dict] | None = None) -> None:
 
     finally:
         await browser.stop()
-
-
-def main() -> None:
-    asyncio.run(download_all())
-
-
-if __name__ == "__main__":
-    main()

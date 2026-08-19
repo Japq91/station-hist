@@ -1,9 +1,0 @@
-[
-  {"name": "MOQUEGUA", "codigo": "000806", "lat": -17.16917, "lon": -70.93167},
-  {"name": "QUINISTAQUILLAS", "codigo": "158301", "lat": -16.77944, "lon": -70.89778},
-  {"name": "CALACOA", "codigo": "158308", "lat": -16.735, "lon": -70.6828},
-  {"name": "ICHUÑA", "codigo": "158310", "lat": -16.13261, "lon": -70.55208},
-  {"name": "UBINAS", "codigo": "000851", "lat": -16.37206, "lon": -70.85394},
-  {"name": "PUNTA COLES", "codigo": "000846", "lat": -17.69867, "lon": -71.37361},
-  {"name": "ILO", "codigo": "000840", "lat": -17.62694, "lon": -71.28806}
-]
