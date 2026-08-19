@@ -36,3 +36,13 @@ def filter_by_department(departamento: str) -> list[dict]:
 
 def list_departments() -> list[str]:
     return sorted({s["departamento"] for s in load_stations()})
+
+
+def filter_by_bbox(lat1: float, lat2: float, lon1: float, lon2: float) -> list[dict]:
+    """Estaciones dentro del rectangulo definido por dos esquinas (orden libre)."""
+    lat_min, lat_max = sorted((lat1, lat2))
+    lon_min, lon_max = sorted((lon1, lon2))
+    return [
+        s for s in load_stations()
+        if lat_min <= s["lat"] <= lat_max and lon_min <= s["lon"] <= lon_max
+    ]

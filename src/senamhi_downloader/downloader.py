@@ -74,19 +74,29 @@ async def download_all(stations: list[dict]) -> None:
                 "  -> En la ventana del navegador: resuelve el/los captcha, "
                 "acepta terminos y condiciones, y haz clic en 'Descargar'."
             )
-            input("  Presiona ENTER aqui cuando la descarga haya terminado... ")
 
-            found = _wait_for_new_file(settings.BROWSER_DOWNLOADS_DIR, start_ts, timeout=30)
-            if not found:
-                print(
-                    f"  [!] No se detecto un archivo nuevo en {settings.BROWSER_DOWNLOADS_DIR}. "
-                    "Muevelo manualmente a downloads/ si se descargo con otro nombre/ubicacion."
-                )
-                continue
+            while True:
+                print("  [1] Aun no he terminado (esperar)")
+                print("  [2] Ya descargue -> mover archivo y continuar")
+                print("  [3] Saltar esta estacion")
+                choice = input("  Elige una opcion [1/2/3]: ").strip()
 
-            dest = settings.DOWNLOAD_DIR / found.name
-            shutil.move(str(found), str(dest))
-            print(f"  OK -> guardado en {dest}")
+                if choice == "2":
+                    found = _wait_for_new_file(settings.BROWSER_DOWNLOADS_DIR, start_ts, timeout=30)
+                    if not found:
+                        print(
+                            f"  [!] No se detecto un archivo nuevo en {settings.BROWSER_DOWNLOADS_DIR}. "
+                            "Espera a que termine la descarga o revisa la carpeta configurada."
+                        )
+                        continue
+                    dest = settings.DOWNLOAD_DIR / found.name
+                    shutil.move(str(found), str(dest))
+                    print(f"  OK -> guardado en {dest}")
+                    break
+                elif choice == "3":
+                    print("  Saltando estacion...")
+                    break
+                # choice == "1" (o cualquier otra cosa): vuelve a mostrar el menu
 
     finally:
         await browser.stop()

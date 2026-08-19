@@ -49,16 +49,39 @@ Descargar todas las estaciones de un departamento:
 python run.py --dep MOQUEGUA
 ```
 
+Descargar las estaciones dentro de un rectángulo geográfico (lat1, lat2, lon1, lon2, en cualquier orden):
+
+```bash
+python run.py --bbox -18.5,-16,-71,-70
+```
+
 Ver los departamentos disponibles:
 
 ```bash
 python run.py --list-departamentos
 ```
 
-Por cada estación seleccionada, el navegador abrirá la página de descarga
-correspondiente. Resuelve el/los captcha y acepta los términos y
-condiciones, haz clic en "Descargar", y presiona ENTER en la terminal para
-continuar con la siguiente estación.
+Diagnosticar qué navegador detecta el script:
+
+```bash
+python run.py --doctor
+```
+
+El primer navegador abierto pausa para que completes el "Ingreso" (acepta
+términos y condiciones y resuelve el captcha) — esa sesión se mantiene para
+el resto de la corrida. Luego, por cada estación seleccionada, el navegador
+abre su página de descarga; resuelve el captcha, acepta los términos y haz
+clic en "Descargar". En la terminal verás un menú:
+
+```
+[1] Aun no he terminado (esperar)
+[2] Ya descargue -> mover archivo y continuar
+[3] Saltar esta estacion
+```
+
+Elige `2` una vez que el archivo ya se descargó a tu carpeta de Descargas —
+el script lo mueve a `downloads/` del proyecto y pasa a la siguiente
+estación automáticamente.
 
 ## Estructura
 

@@ -371,7 +371,7 @@
     "lon": -78.05111
   },
   {
-    "name": "CHANCAY BA�OS",
+    "name": "CHANCAY BAÑOS",
     "codigo": "000395",
     "departamento": "CAJAMARCA",
     "lat": -6.575,
@@ -910,7 +910,7 @@
     "lon": -79.20161
   },
   {
-    "name": "JAYANCA (LA VI�A)",
+    "name": "JAYANCA (LA VIÑA)",
     "codigo": "000333",
     "departamento": "LAMBAYEQUE",
     "lat": -6.33278,
@@ -1015,7 +1015,7 @@
     "lon": -75.87214
   },
   {
-    "name": "CA�ETE",
+    "name": "CAÑETE",
     "codigo": "000616",
     "departamento": "LIMA",
     "lat": -13.07475,
@@ -1078,7 +1078,7 @@
     "lon": -77.122
   },
   {
-    "name": "HUA�EC",
+    "name": "HUAÑEC",
     "codigo": "156103",
     "departamento": "LIMA",
     "lat": -12.28333,
@@ -1260,7 +1260,7 @@
     "lon": -75.72264
   },
   {
-    "name": "�A�A",
+    "name": "ÑAÑA",
     "codigo": "000543",
     "departamento": "LIMA",
     "lat": -11.98853,
@@ -1281,7 +1281,7 @@
     "lon": -73.63333
   },
   {
-    "name": "BRETA�A",
+    "name": "BRETAÑA",
     "codigo": "152402",
     "departamento": "LORETO",
     "lat": -5.26568,
@@ -1393,7 +1393,7 @@
     "lon": -70.6828
   },
   {
-    "name": "ICHU�A",
+    "name": "ICHUÑA",
     "codigo": "158310",
     "departamento": "MOQUEGUA",
     "lat": -16.13261,
@@ -1722,7 +1722,7 @@
     "lon": -69.71547
   },
   {
-    "name": "MU�ANI",
+    "name": "MUÑANI",
     "codigo": "000785",
     "departamento": "PUNO",
     "lat": -14.76694,
@@ -1799,7 +1799,7 @@
     "lon": -76.09833
   },
   {
-    "name": "CU�UMBUQUE",
+    "name": "CUÑUMBUQUE",
     "codigo": "153311",
     "departamento": "SAN MARTIN",
     "lat": -6.50028,
