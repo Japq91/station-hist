@@ -1,26 +1,22 @@
 # station-hist
 
-Automatiza la descarga de datos históricos hidrometeorológicos de SENAMHI
-para cualquier estación del Perú, vía dos portales distintos de SENAMHI:
+Un par de scripts en Python para automatizar la descarga de datos históricos hidrometeorológicos del SENAMHI (Perú). Como meteorólogo, descargar estos datos manualmente estación por estación es tedioso, así que armé este proyecto para agilizar el proceso.
 
-- **`run_climatico.py`** — portal [`site/descarga-datos/`](https://www.senamhi.gob.pe/site/descarga-datos/):
-  requiere captcha y login. No se intenta evadir el captcha; el script
-  automatiza solo la navegación entre estaciones.
-- **`run_operativo.py`** — portal `mapas/mapa-estaciones-2/` (el mismo que
-  usa [Garúa](https://github.com/danyneyra/senamhi-scraper)): sin captcha
-  ni login, completamente automático de principio a fin.
+El SENAMHI tiene dos portales distintos, por lo que el repositorio se divide en dos enfoques:
 
-Ambos abren un navegador real (Chrome/Brave/Edge, vía [zendriver](https://github.com/cdpdriver/zendriver)).
+- **`run_climatico.py`**: para el portal de [Descarga de Datos](https://www.senamhi.gob.pe/site/descarga-datos/). Requiere login y captcha. El script automatiza la navegación y el filtrado entre estaciones, pero la validación humana inicial hay que hacerla a mano.
+- **`run_operativo.py`**: para el portal del [Mapa de Estaciones](https://www.senamhi.gob.pe/mapas/mapa-estaciones-2/). 100% automático, sin captcha ni login (usa la misma ruta que [Garúa](https://github.com/danyneyra/senamhi-scraper)).
+
+Ambos usan [zendriver](https://github.com/cdpdriver/zendriver) por detrás para levantar una instancia real de Chrome, Brave o Edge.
 
 ## Requisitos
 
 - Conda (Miniconda o Anaconda)
-- Google Chrome, Brave o Microsoft Edge instalado (no requiere permisos de administrador)
+- Chrome, Brave o Edge instalado (no requiere permisos de administrador)
 
 ## Instalación
 
-Crea el ambiente con `environment.yml` (incluye Python 3.11 y todas las
-dependencias de ambos scripts, en un ambiente llamado `getdata`):
+Clona el repositorio y crea el ambiente de conda (`getdata`), que ya incluye Python 3.11 y las dependencias necesarias:
 
 ```bash
 git clone https://github.com/Japq91/station-hist.git
@@ -30,97 +26,61 @@ conda activate getdata
 cp .env.example .env
 ```
 
-Para actualizar el ambiente después de un `git pull` que cambie
-`environment.yml`:
+> **Nota:** también funciona sin conda con `pip install -r requirements.txt` en un entorno virtual de Python 3.11+. Para actualizar el ambiente después de un `git pull` que cambie `environment.yml`: `conda env update -f environment.yml --prune`.
 
-```bash
-conda env update -f environment.yml --prune
-```
+## 1. Descarga del portal climático (semi-automático)
 
-Sin conda también funciona con `pip install -r requirements.txt` en un
-entorno virtual de Python 3.11+.
+Ejecuta `run_climatico.py`. El repositorio incluye la metadata de 293 estaciones en `data/estaciones.json`.
 
-## `run_climatico.py` (con captcha)
-
-Incluye `data/estaciones.json` con las 293 estaciones disponibles en este
-portal, en 22 departamentos del Perú.
+**Ejemplos de uso:**
 
 Buscar el código de una estación por nombre:
-
 ```bash
 python run_climatico.py --search UBINAS
 ```
 
-Descargar una o más estaciones por código:
-
+Descargar por código (soporta varias estaciones):
 ```bash
 python run_climatico.py --station 000851 --station 000806
 ```
 
-Descargar todas las estaciones de un departamento:
-
+Descargar un departamento completo:
 ```bash
 python run_climatico.py --dep MOQUEGUA
 ```
 
-Descargar las estaciones dentro de un rectángulo geográfico (lat1, lat2, lon1, lon2, en cualquier orden).
-Usa `=` (no espacio) porque los valores empiezan con `-` y confunden a argparse:
-
+Descargar por rectángulo geográfico (lat1, lat2, lon1, lon2). Usa `=` para que argparse no confunda los signos negativos con otra opción:
 ```bash
 python run_climatico.py --bbox=-18.5,-16,-71,-70
 ```
 
 Ver los departamentos disponibles, o diagnosticar el navegador detectado:
-
 ```bash
 python run_climatico.py --list-departamentos
 python run_climatico.py --doctor
 ```
 
-El navegador abre directo con zoom en el **mapa filtrado por el
-departamento de la primera estación de la lista**, y pausa para que
-completes el "Ingreso" (acepta términos y condiciones y resuelve el
-captcha) — esa sesión se mantiene dentro de la misma pestaña para el resto
-de la corrida.
+**Flujo de ejecución:**
+Al iniciar, el script abre el navegador centrado en el mapa del departamento correspondiente a la primera estación. La ejecución hace una pausa para que inicies sesión, aceptes los términos y resuelvas el captcha manualmente. Una vez que descargas el primer archivo, presionas ENTER en la terminal y el script avanza a la siguiente estación, manteniendo la sesión activa. Los archivos quedan en `downloads/`.
 
-Luego, por cada estación seleccionada, el navegador abre el **mapa filtrado
-por el departamento de esa estación** (no un link directo — la página de
-descarga solo funciona bien si se llega a ella haciendo clic en el globo,
-igual que en el uso manual). Busca el globo de la estación indicada, haz
-clic en él, ve a la pestaña "Descarga", resuelve el captcha, acepta los
-términos y haz clic en "Descargar" — el archivo se guarda directo en
-`downloads/` del proyecto. Presiona ENTER en la terminal para pasar a la
-siguiente estación.
+## 2. Descarga del portal operativo (100% automático)
 
-## `run_operativo.py` (sin captcha, automático)
+Ejecuta `run_operativo.py`. Incluye la metadata de 1010 estaciones en `data_operativo/estaciones.json`. Soporta los mismos filtros geográficos y de búsqueda, más el rango de años.
 
-Incluye `data_operativo/estaciones.json` con las 1010 estaciones del
-registro nacional que usa Garúa (código, nombre, departamento, lat, lon,
-alt, tipo, estado). Usa la misma selección por `--station`, `--dep`,
-`--search` o `--bbox`, más el rango de años:
-
+**Ejemplos de uso:**
 ```bash
-python run_operativo.py --bbox=-18.5,-16,-71,-70
-python run_operativo.py --bbox=-18.5,-16,-71,-70 --yeari 2020 --yearf 2024
 python run_operativo.py --station 100142 --station 117002
-python run_operativo.py --dep MOQUEGUA
+python run_operativo.py --bbox=-18.5,-16,-71,-70 --yeari 2020 --yearf 2024
 ```
 
-Por defecto descarga el periodo **2017-2026**; `--yeari`/`--yearf` lo
-acotan. No hay login ni captcha que resolver — el navegador solo necesita
-pasar la verificación automática de Cloudflare, algo que ya resuelve
-zendriver al usar un navegador real. El script recorre las estaciones sin
-pausas, seleccionando cada periodo disponible dentro del rango y
-capturando la respuesta directamente (sin depender de que el navegador
-descargue un archivo). Cada estación genera **un único CSV consolidado**,
-nombrado por su código SENAMHI (ej: `100142-2017-2026.csv`) en
-`downloads_operativo/`.
+Si no especificas años, descarga por defecto el periodo 2017-2026.
 
-## Estructura
+**Flujo de ejecución:**
+El proceso es completamente desatendido. Al usar un navegador real, se pasa sin problemas la verificación de Cloudflare. El script recorre las estaciones indicadas, extrae los datos interceptando las respuestas directamente (sin depender de que el navegador descargue un archivo) y consolida los resultados. Cada estación genera un único CSV, nombrado por su código SENAMHI (ej: `100142-2017-2026.csv`), en `downloads_operativo/`.
 
-- `environment.yml` — ambiente conda `getdata` con las dependencias de ambos scripts.
-- `data/estaciones.json`, `data_operativo/estaciones.json` — metadata de estaciones (código, nombre, departamento, lat, lon[, alt]) de cada portal.
-- `src/senamhi_downloader/browser.py` — detección del navegador, compartida por ambos scripts (adaptado de Garúa).
-- `src/senamhi_downloader/{stations,cli,downloader}.py` — lógica de `run_climatico.py`.
-- `src/senamhi_downloader/operativo/` — lógica de `run_operativo.py` (scraping vía CDP, sin captcha), portada de Garúa.
-- `downloads/`, `downloads_operativo/` — archivos descargados de cada portal (ignorados por git salvo `.gitkeep`).
+## Estructura del proyecto
+
+- `environment.yml`: ambiente conda `getdata` con las dependencias de ambos scripts.
+- `data/` y `data_operativo/`: JSON con la metadata de las estaciones (coordenadas, códigos, departamentos) de cada portal.
+- `src/senamhi_downloader/`: código fuente. Contiene la detección del navegador (`browser.py`), la CLI y la lógica de scraping de cada portal (`operativo/` para el segundo).
+- `downloads/` y `downloads_operativo/`: carpetas de salida de los datos (ignoradas por git).
