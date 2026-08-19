@@ -14,17 +14,31 @@ Ambos abren un navegador real (Chrome/Brave/Edge, vía [zendriver](https://githu
 
 ## Requisitos
 
-- Python 3.11+
+- Conda (Miniconda o Anaconda)
 - Google Chrome, Brave o Microsoft Edge instalado (no requiere permisos de administrador)
 
 ## Instalación
 
+Crea el ambiente con `environment.yml` (incluye Python 3.11 y todas las
+dependencias de ambos scripts, en un ambiente llamado `getdata`):
+
 ```bash
 git clone https://github.com/Japq91/station-hist.git
 cd station-hist
-pip install -r requirements.txt
+conda env create -f environment.yml
+conda activate getdata
 cp .env.example .env
 ```
+
+Para actualizar el ambiente después de un `git pull` que cambie
+`environment.yml`:
+
+```bash
+conda env update -f environment.yml --prune
+```
+
+Sin conda también funciona con `pip install -r requirements.txt` en un
+entorno virtual de Python 3.11+.
 
 ## `run_climatico.py` (con captcha)
 
@@ -104,6 +118,7 @@ nombrado por su código SENAMHI (ej: `100142-2017-2026.csv`) en
 
 ## Estructura
 
+- `environment.yml` — ambiente conda `getdata` con las dependencias de ambos scripts.
 - `data/estaciones.json`, `data_operativo/estaciones.json` — metadata de estaciones (código, nombre, departamento, lat, lon[, alt]) de cada portal.
 - `src/senamhi_downloader/browser.py` — detección del navegador, compartida por ambos scripts (adaptado de Garúa).
 - `src/senamhi_downloader/{stations,cli,downloader}.py` — lógica de `run_climatico.py`.
