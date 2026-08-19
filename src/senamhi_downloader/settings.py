@@ -10,9 +10,11 @@ STATIONS_FILE_PATH = PROJECT_ROOT / "data" / "estaciones.json"
 DOWNLOAD_DIR = PROJECT_ROOT / "downloads"
 
 # Carpeta real donde el navegador guarda las descargas (la de tu SO).
-# El script mueve el archivo desde aqui hacia DOWNLOAD_DIR una vez que
-# confirmas que la descarga terminó.
-BROWSER_DOWNLOADS_DIR = Path(os.getenv("BROWSER_DOWNLOADS_DIR", str(Path.home() / "Downloads")))
+# El script mueve los archivos desde aqui hacia DOWNLOAD_DIR al terminar.
+# os.getenv no aplica el default si la variable existe pero esta vacia
+# (ej: "BROWSER_DOWNLOADS_DIR=" en .env), asi que se valida explicitamente.
+_browser_downloads_env = os.getenv("BROWSER_DOWNLOADS_DIR", "").strip()
+BROWSER_DOWNLOADS_DIR = Path(_browser_downloads_env) if _browser_downloads_env else Path.home() / "Downloads"
 
 BASE_URL = "https://www.senamhi.gob.pe/site/descarga-datos/"
 # La pagina descarga/?cod=X esta pensada para cargarse dentro del flujo

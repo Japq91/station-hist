@@ -49,6 +49,9 @@ async def download_all(stations: list[dict]) -> None:
     if not stations:
         return
 
+    print(f"Carpeta de Descargas del navegador: {settings.BROWSER_DOWNLOADS_DIR}")
+    print(f"Carpeta destino del proyecto:       {settings.DOWNLOAD_DIR}")
+
     session_start_ts = time.time()
     browser = await zd.start(config=get_browser_config())
     try:
