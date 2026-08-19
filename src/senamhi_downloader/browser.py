@@ -105,4 +105,8 @@ def get_browser_config() -> Config:
     return Config(
         browser_executable_path=browser_check.path,
         headless=False,
+        # El default de zendriver (0.25s x 10 intentos ~= 2.75s) es muy
+        # corto para un arranque en frio de Chrome; esto da hasta ~30s.
+        browser_connection_timeout=1.0,
+        browser_connection_max_tries=30,
     )
