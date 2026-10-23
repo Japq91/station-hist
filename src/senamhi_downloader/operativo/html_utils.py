@@ -73,6 +73,16 @@ def _process_table_row(row, row_index: int, separator: str) -> list[str] | None:
     return row_data if row_data and any(cell.strip() for cell in row_data) else None
 
 
+def table_header_cells(html_content: str) -> list[str]:
+    """Textos de la primera fila de la tabla (los nombres de columna)."""
+    soup = BeautifulSoup(html_content, HTML_PARSER)
+    table = soup.find("table")
+    row = table.find("tr") if table else None
+    if not row:
+        return []
+    return [re.sub(r"\s+", " ", c.get_text(strip=True)) for c in row.find_all(["td", "th"])]
+
+
 def html_table_to_csv(html_content: str, separator: str = settings.CSV_SEPARATOR, start_line: int = 0) -> str:
     soup = BeautifulSoup(html_content, HTML_PARSER)
     table = soup.find("table")
