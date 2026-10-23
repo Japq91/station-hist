@@ -5,7 +5,7 @@ Un par de scripts en Python para automatizar la descarga de datos históricos hi
 El SENAMHI tiene dos portales distintos, por lo que el repositorio se divide en dos enfoques:
 
 - **`run_climatico.py`**: para el portal de [Descarga de Datos](https://www.senamhi.gob.pe/site/descarga-datos/). Requiere login y captcha. El script automatiza la navegación y el filtrado entre estaciones, pero la validación humana inicial hay que hacerla a mano (correo ingreso y para cada estación).
-- **`run_operativo.py`**: para el portal del [Mapa de Estaciones](https://www.senamhi.gob.pe/mapas/mapa-estaciones-2/). 95% automático, sin captcha ni login (usa la misma ruta que [Garúa](https://github.com/danyneyra/senamhi-scraper)). Sin embargo, este requiere aceptar un captcha en cada vez que se cambia de estación.
+- **`run_operativo.py`**: para el portal del [Mapa de Estaciones](https://www.senamhi.gob.pe/mapas/mapa-estaciones-2/). Casi automático, sin login (usa la misma ruta que [Garúa](https://github.com/danyneyra/senamhi-scraper)). Lo único manual es la verificación de Cloudflare, que a veces aparece al cambiar de estación.
 
 Ambos usan [zendriver](https://github.com/cdpdriver/zendriver) por detrás para levantar una instancia real de Chrome, Brave o Edge.
 
@@ -54,20 +54,31 @@ Al iniciar, el script abre el navegador centrado en el mapa del departamento cor
 La ejecución hace una pausa para que inicies sesión, aceptes los términos y resuelvas el captcha manualmente. 
 Una vez que descargas el primer archivo, presionas ENTER en la terminal y el script avanza a la siguiente estación, manteniendo la sesión activa. Los archivos quedan en `downloads/`.
 
-## 2. Descarga del portal operativo (100% automático)
+## 2. Descarga del portal operativo (casi automático)
 
 Ejecuta `run_operativo.py`. Incluye la metadata de 1010 estaciones en `data_operativo/estaciones.json`. Soporta los mismos filtros geográficos y de búsqueda, más el rango de años.
 
 **Ejemplos de uso:**
 ```bash
+#Buscar el código de una estación por nombre (no abre el navegador):
+python run_operativo.py --search "CAMPO DE MARTE"
+#Descargar por código, una o varias estaciones:
 python run_operativo.py --station 100142 --station 117002
+#Por departamento o por rectángulo geográfico, con rango de años:
+python run_operativo.py --dep MOQUEGUA --yeari 2024 --yearf 2024
 python run_operativo.py --bbox=-18.5,-16,-71,-70 --yeari 2020 --yearf 2024
 ```
+
+Ojo con los nombres repetidos: muchas estaciones aparecen dos veces, una convencional y otra automática (por ejemplo, Campo de Marte es `112171` convencional y `112181` automática, con datos cada hora). Fíjate en la categoría (`EMA` = automática) antes de descargar, porque las columnas del CSV cambian.
 
 Si no especificas años, descarga por defecto el periodo 2017-2026.
 
 **Flujo de ejecución:**
-El proceso es completamente desatendido. Al usar un navegador real, se pasa sin problemas la verificación de Cloudflare. El script recorre las estaciones indicadas, extrae los datos interceptando las respuestas directamente (sin depender de que el navegador descargue un archivo) y consolida los resultados. Cada estación genera un único CSV, nombrado por su código SENAMHI (ej: `100142-2017-2026.csv`), en `downloads_operativo/`.
+Al usar un navegador real, la mayoría de las veces se pasa la verificación de Cloudflare sin hacer nada. La primera estación arranca sola; desde la segunda, el script hace una pausa al abrir cada estación: si en el navegador apareció la casilla de Cloudflare, la marcas y presionas ENTER en la terminal (si no apareció, solo ENTER). Sin esa pausa, los periodos de una estación bloqueada se perdían sin aviso.
+
+El script recorre las estaciones indicadas, extrae los datos interceptando las respuestas directamente (sin depender de que el navegador descargue un archivo) y consolida los resultados. Cada estación genera un único CSV, nombrado por su código SENAMHI (ej: `100142-2017-2026.csv`), en `downloads_operativo/`.
+
+**Estaciones con sensores de menos.** Algunas automáticas no miden todo (por ejemplo Ceres, `112278`, no tiene humedad). El encabezado del CSV se arma con las columnas que trae la tabla de SENAMHI, así que esas estaciones salen con una columna menos y la terminal lo avisa (`Columnas ausentes en esta estacion: Humedad (%)`). Si alguna fila no calza con el encabezado, también avisa al guardar: en ese caso revisa el CSV, porque los valores pueden estar corridos. Igual conviene contar las filas, porque las horas sin registro no aparecen.
 
 ## Estructura del proyecto
 
